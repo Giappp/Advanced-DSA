@@ -17,7 +17,7 @@ class Node:
 class RedBlackTree:
     def __init__(self):
         # Color of the Node either Red or Black
-        self.nil = Node(0)  # The nil node, represents nothing
+        self.nil = Node(0)  # The nil node, represents a null node
         self.nil.red = False
         self.nil.left = None
         self.nil.right = None
@@ -93,5 +93,40 @@ class RedBlackTree:
         z.red = True  # the new node starts out red
         T.insert_fixup(T, z)  # Correct any violations of red-black tree
 
+    # This function called after insert a node z
+    # Fix up the properties of RBTree at node z
     def insert_fixup(T, z):
-        pass
+        # while the parent node color of z is RED:
+        while z.parent.red:
+            if z.parent == z.parent.parent.left:  # is z's parent a left child?
+                y = z.parent.parent.right  # y is z's uncle
+                if y.red:  # Check of both z's parent and uncle are red
+                    # Case 1: Both z's parent and uncle are red
+                    z.parent.red = False
+                    y.red = False
+                    z.parent.parent.red = True
+                    z = z.parent.parent
+                else:
+                    # Case 2: Only the parent node is red
+                    if z == z.parent.right:
+                        z = z.parent
+                        T.left_rotate(z)
+                    # Case 3: ?
+                    z.parent.red = False
+                    z.parent.parent.red = True
+                    T.right_rotate(z.parent.parent)
+            else:  # if z's parent is a right child
+                y = z.parent.parent.left
+                if y.red:
+                    z.parent.red = False
+                    y.red = False
+                    z.parent.parent.red = True
+                    z = z.parent.parent
+                else:
+                    if z == z.parent.left:
+                        z = z.parent
+                        T.right_rotate(z)
+                    z.parent.red = False
+                    z.parent.parent.red = True
+                    T.left_rotate(z.parent.parent)
+        T.root.red = False
